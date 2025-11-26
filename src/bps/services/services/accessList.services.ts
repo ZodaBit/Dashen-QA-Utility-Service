@@ -39,8 +39,10 @@ export class AccessListService {
 
           try {
             const insertedDocs = await AccessListModel.insertMany(docs);
-            const ids = insertedDocs.map(d => d._id.toString());
-            resolve(ids); // returns documents WITH MongoDB IDs
+            resolve(insertedDocs.map(doc=> ({
+              id: doc._id.toString(),
+              key: doc.key
+            })));
           } catch (err) {
             reject(err);
           }

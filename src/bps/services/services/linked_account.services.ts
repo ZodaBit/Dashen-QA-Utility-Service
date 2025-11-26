@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import fs from "fs/promises";
-import { memberModel } from "../model/member.model.js";
+import { linkedAccountModel } from "../model/linked_account.modal.js";
+import { link } from "fs";
 
-
-const test_data=process.env.BATCH_TAG || "test_data";
+const test_data = process.env.BATCH_TAG || "test_data";
 function convertExtendedJSON(obj: any): any {
   if (Array.isArray(obj)) {
     return obj.map(convertExtendedJSON);
@@ -52,11 +52,9 @@ function cleanEnumFields(obj: any): any {
   return obj;
 }
 
-
-export class MemberService {
-  
-    private convertOid(doc: any): any {
-    if (Array.isArray(doc)) return doc.map(d => this.convertOid(d));
+export class LinkedAccountService {
+  private convertOid(doc: any): any {
+    if (Array.isArray(doc)) return doc.map((d) => this.convertOid(d));
 
     if (doc && typeof doc === "object") {
       const newDoc: any = {};
@@ -73,32 +71,26 @@ export class MemberService {
     return doc;
   }
 
-   public async insertMember(buffer:Buffer):Promise<string>{
-       try {
-      const bufferStr = buffer.toString('utf-8');
-      let memberData = JSON.parse(bufferStr);
-       memberData = convertExtendedJSON(memberData);
-       memberData = cleanEnumFields(memberData); 
-      memberData.batch_tag = test_data;
-      const insertedDoc = await memberModel.insertOne(memberData)as any;
+  public async insertLinkedAccount(buffer: Buffer): Promise<string> {
+    try {
+      const bufferStr = buffer.toString("utf-8");
+      let linked_account = JSON.parse(bufferStr);
+      linked_account = convertExtendedJSON(linked_account);
+      linked_account = cleanEnumFields(linked_account);
+      linked_account.batch_tag = test_data;
+      const insertedDoc = (await linkedAccountModel.insertOne(
+        linked_account
+      )) as any;
 
       // convert objectId to string
       const id = insertedDoc._id.toString();
-      //const device_uuid=insertedDoc.device_uuid;
-      //const app_installation_date=insertedDoc.app_installation_date;
-
       return id;
     } catch (err) {
       throw err;
     }
   }
 
-   deleteTestData(): Promise<any> {
-      return memberModel.deleteMany({ batch_tag: test_data });
-    }
-
-    
-
+  deleteTestData(): Promise<any> {
+    return linkedAccountModel.deleteMany({ batch_tag: test_data });
+  }
 }
-
-

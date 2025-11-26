@@ -23,11 +23,11 @@ export const insertAccessList = async (req: Request, res: Response) => {
       if (!fileBuffer)
         return res.status(400).json({ error: "CSV file is required" });
 
-      const ids = await service.insertFromCsvBuffer(fileBuffer);
-      console.log("Inserted IDs:", ids);
+      const inserted = await service.insertFromCsvBuffer(fileBuffer);
+      const keys=inserted.map(doc=>doc.key);
+      console.log("Inserted IDs:", keys);
       res.json({
-         message: `Inserted ${ids.length} access list entries from CSV.`
-        , insertedIds: ids
+       keys
       });
     } catch (err) {
       return res.status(500).json({ error: err });

@@ -33,7 +33,7 @@ interface Address {
 }
 
 interface Fayda {
-  fayda_id?: string;
+  id_number?: string;
   fayda_access_token?: string;
   employment_status?: string;
   employer_name?: string;
@@ -110,7 +110,7 @@ export interface IUser extends Document {
   device_uuid?: string;
   app_version?: string;
   platform?: string;
-  app_installation_date?: Date;
+  application_installation_date?: Date;
   customer_number?: string;
   initial_linked_date?: Date;
   account_type?: string;
@@ -208,7 +208,7 @@ const MemberSchema: Schema = new Schema(
     device_uuid: { type: String },
     app_version: { type: String },
     platform: { type: String },
-    app_installation_date: { type: Date },
+    application_installation_date: { type: Date },
     customer_number: { type: String },
     initial_linked_date: { type: Date },
     account_type: { type: String },

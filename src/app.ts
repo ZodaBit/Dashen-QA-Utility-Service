@@ -5,6 +5,7 @@ import accessListRoutes from "./bps/routes/accessList.routes.js";
 import accountRoutes from "./bps/routes/account.routes.js";
 import chequeRoutes from "./bps/routes/cheque.routes.js";
 import memberRoutes from "./bps/routes/member.routes.js";
+import linkedAccountRoutes from "./bps/routes/linked_account.routes.js";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use("/api/v1/cbesuperapp/qaservice/access_list", accessListRoutes);
 app.use("/api/v1/cbesuperapp/qaservice/account", accountRoutes);
 app.use("/api/v1/cbesuperapp/qaservice/cheque",chequeRoutes );
 app.use("/api/v1/cbesuperapp/qaservice/member",memberRoutes );
+app.use("/api/v1/cbesuperapp/qaservice/linked_account",linkedAccountRoutes );
 
 app.get("/api/v1/cbesuperapp/qaservice/health", (req, res) => res.json({ status: "ok" }));
 
