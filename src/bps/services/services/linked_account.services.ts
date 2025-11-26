@@ -90,6 +90,23 @@ export class LinkedAccountService {
     }
   }
 
+   public async searchLinkedAccount(account_number: string): Promise<any> {
+    try {
+      const doc = await linkedAccountModel.findOne({account_number}, { _id: 1 });
+      return doc?._id?.toString() || null;
+    } catch (err) {
+      throw err;
+    }
+  }
+  
+   deleteLinkedAccountById(id: string): Promise<any> {
+    try{
+      return linkedAccountModel.deleteOne({ _id: new mongoose.Types.ObjectId(id) });
+    }catch(err){
+      throw err;
+    }
+    }
+
   deleteTestData(): Promise<any> {
     return linkedAccountModel.deleteMany({ batch_tag: test_data });
   }

@@ -55,3 +55,35 @@ export const deleteTestData = async (req: Request, res: Response) => {
     res.status(500).json({ error: err });
   }
 };
+
+export const searchLinkedAccountDelete = async (req: Request, res: Response) => {
+  try{
+  const { account_number } = req.params;
+
+  if (!account_number) {
+      return res.status(400).json({
+        message: "account_number parameter is required",
+      });
+    }
+// 1. Search → return _id
+    const id = await service.searchLinkedAccount(account_number);
+
+    if (!id) {
+      return res.status(404).json({
+        message: "Linked account not found",
+      });
+    }
+       // 2. Delete using _id
+    const deleteResult = await service.deleteLinkedAccountById(id);
+
+    return res.json({
+      message: "Linked account deleted successfully",
+      _id: id,
+      deleteResult,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err instanceof Error ? err.message : err });
+  }
+
+  };
