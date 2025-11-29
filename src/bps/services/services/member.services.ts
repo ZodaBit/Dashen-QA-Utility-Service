@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
-import fs from "fs/promises";
 import { memberModel } from "../model/member.model.js";
-
-
+import fs from "fs";
+import multer from "multer";
 const test_data=process.env.BATCH_TAG || "test_data";
 function convertExtendedJSON(obj: any): any {
   if (Array.isArray(obj)) {
@@ -88,6 +87,30 @@ export class MemberService {
       //const app_installation_date=insertedDoc.app_installation_date;
 
       return id;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+ public async insertMembersFromFiles(files: Express.Multer.File[]): Promise<string[]> {
+    try {
+      const memberDocs: any[] = [];
+
+      for (const file of files) {
+        const buffer = fs.readFileSync(file.path);
+        const bufferStr = buffer.toString("utf-8");
+        let memberData = JSON.parse(bufferStr);
+
+        memberData = convertExtendedJSON(memberData);
+        memberData = cleanEnumFields(memberData);
+        memberDocs.push(memberData);
+      }
+
+      // Bulk insert
+      const insertedDocs = await memberModel.insertMany(memberDocs);
+
+      // Return all inserted _id as string
+      return insertedDocs.map((doc) => doc._id.toString());
     } catch (err) {
       throw err;
     }

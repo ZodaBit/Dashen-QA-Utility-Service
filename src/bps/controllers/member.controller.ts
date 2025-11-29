@@ -1,7 +1,10 @@
 import type { Request, Response } from "express";
 import { MemberService } from "../services/services/member.services.js";
 import Busboy from "busboy";
+import multer from "multer";
+import fs from "fs";
 
+const upload = multer({ dest: "uploads/members/" });
 const service = new MemberService();
 
 export const insertMember = async (req: Request, res: Response) => {
@@ -43,6 +46,36 @@ export const insertMember = async (req: Request, res: Response) => {
   req.pipe(busboy);
 };
 
+export const insertMembersBulk = [
+  upload.array("files"), // field name must match the uploaded files
+  async (req: Request, res: Response) => {
+    try {
+      const files = req.files as Express.Multer.File[];
+      if (!files || files.length === 0) {
+        return res.status(400).json({ message: "No files uploaded" });
+      }
+
+      const insertedIds = await service.insertMembersFromFiles(files);
+
+      // DELETE uploaded files after insertion
+      for (const file of files) {
+        try {
+          fs.unlinkSync(file.path);
+        } catch (err) {
+          console.warn(`Failed to delete file ${file.path}: ${err}`);
+        }
+      }
+
+
+      res.json({
+        message: "Inserted members in bulk successfully",
+        insertedIds,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  },
+];
 
 export const deleteTestData = async (req: Request, res: Response) => {
   try {

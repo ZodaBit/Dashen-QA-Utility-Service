@@ -1,7 +1,10 @@
 import type { Request, Response } from "express";
 import { LinkedAccountService } from "../services/services/linked_account.services.js";
 import Busboy from "busboy";
+import multer from "multer";
+import fs from "fs";
 
+const upload = multer({ dest: "uploads/linked_accounts/" });
 const service = new LinkedAccountService();
 
 export const insertLinkedAccount = async (req: Request, res: Response) => {
@@ -42,6 +45,38 @@ export const insertLinkedAccount = async (req: Request, res: Response) => {
   });
   req.pipe(busboy);
 };
+
+
+export const insertLinkedAccountBulk = [
+  upload.array("files"), // field name must match the uploaded files
+  async (req: Request, res: Response) => {
+    try {
+      const files = req.files as Express.Multer.File[];
+      if (!files || files.length === 0) {
+        return res.status(400).json({ message: "No files uploaded" });
+      }
+
+      const insertedIds = await service.insertLinkedAccountFromFiles(files);
+
+      // DELETE uploaded files after insertion
+      for (const file of files) {
+        try {
+          fs.unlinkSync(file.path);
+        } catch (err) {
+          console.warn(`Failed to delete file ${file.path}: ${err}`);
+        }
+      }
+
+
+      res.json({
+        message: "Inserted linked account in bulk successfully",
+        insertedIds,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  },
+];
 
 
 export const deleteTestData = async (req: Request, res: Response) => {

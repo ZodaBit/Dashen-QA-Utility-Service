@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { linkedAccountModel } from "../model/linked_account.modal.js";
-import fs from "fs";
-import multer from "multer";
+import fs from "fs/promises";
+import { TransactionLimitsModel } from "../model/transaction_limits.model.js";
+import { link } from "fs";
 
 const test_data = process.env.BATCH_TAG || "test_data";
 function convertExtendedJSON(obj: any): any {
@@ -52,7 +52,7 @@ function cleanEnumFields(obj: any): any {
   return obj;
 }
 
-export class LinkedAccountService {
+export class TransactionLimitsService {
   private convertOid(doc: any): any {
     if (Array.isArray(doc)) return doc.map((d) => this.convertOid(d));
 
@@ -71,15 +71,15 @@ export class LinkedAccountService {
     return doc;
   }
 
-  public async insertLinkedAccount(buffer: Buffer): Promise<string> {
+  public async insertTransactionLimits(buffer: Buffer): Promise<string> {
     try {
       const bufferStr = buffer.toString("utf-8");
-      let linked_account = JSON.parse(bufferStr);
-      linked_account = convertExtendedJSON(linked_account);
-      linked_account = cleanEnumFields(linked_account);
-      linked_account.batch_tag = test_data;
-      const insertedDoc = (await linkedAccountModel.insertOne(
-        linked_account
+      let transaction_limits = JSON.parse(bufferStr);
+      transaction_limits = convertExtendedJSON(transaction_limits);
+      transaction_limits = cleanEnumFields(transaction_limits);
+      transaction_limits.batch_tag = test_data;
+      const insertedDoc = (await TransactionLimitsModel.insertOne(
+        transaction_limits
       )) as any;
 
       // convert objectId to string
@@ -90,49 +90,17 @@ export class LinkedAccountService {
     }
   }
 
-   public async insertLinkedAccountFromFiles(files: Express.Multer.File[]): Promise<string[]> {
-      try {
-        const linkedAccountDocs: any[] = [];
   
-        for (const file of files) {
-          const buffer = fs.readFileSync(file.path);
-          const bufferStr = buffer.toString("utf-8");
-          let linked_account_data = JSON.parse(bufferStr);
-  
-          linked_account_data = convertExtendedJSON(linked_account_data);
-          linked_account_data = cleanEnumFields(linked_account_data);
-          linkedAccountDocs.push(linked_account_data);
-        }
-  
-        // Bulk insert
-        const insertedDocs = await linkedAccountModel.insertMany(linkedAccountDocs);
-  
-        // Return all inserted _id as string
-        return insertedDocs.map((doc) => doc._id.toString());
-      } catch (err) {
-        throw err;
-      }
-    }
-
-
-   public async searchLinkedAccount(account_number: string): Promise<any> {
-    try {
-      const doc = await linkedAccountModel.findOne({account_number}, { _id: 1 });
-      return doc?._id?.toString() || null;
-    } catch (err) {
-      throw err;
-    }
-  }
-  
-   deleteLinkedAccountById(id: string): Promise<any> {
+   deleteTransactionLimitById(user: string): Promise<any> {
     try{
-      return linkedAccountModel.deleteOne({ _id: new mongoose.Types.ObjectId(id) });
+      return TransactionLimitsModel.deleteOne({ user: new mongoose.Types.ObjectId(user) });
     }catch(err){
+        console.log(err);
       throw err;
     }
     }
 
   deleteTestData(): Promise<any> {
-    return linkedAccountModel.deleteMany({ batch_tag: test_data });
+    return TransactionLimitsModel.deleteMany({ batch_tag: test_data });
   }
 }
