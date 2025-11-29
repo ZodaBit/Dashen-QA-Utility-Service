@@ -69,8 +69,7 @@ export const insertLinkedAccountBulk = [
 
 
       res.json({
-        message: "Inserted linked account in bulk successfully",
-        insertedIds,
+        message: `Inserted ${insertedIds.length} linked accounts in bulk successfully`,
       });
     } catch (err: any) {
       res.status(500).json({ error: err.message });

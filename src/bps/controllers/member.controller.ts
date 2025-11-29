@@ -68,8 +68,7 @@ export const insertMembersBulk = [
 
 
       res.json({
-        message: "Inserted members in bulk successfully",
-        insertedIds,
+        message: `Inserted ${insertedIds.length} members in bulk successfully`,
       });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
