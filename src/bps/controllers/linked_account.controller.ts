@@ -1,7 +1,10 @@
 import type { Request, Response } from "express";
 import { LinkedAccountService } from "../services/services/linked_account.services.js";
 import Busboy from "busboy";
+import multer from "multer";
+import fs from "fs";
 
+const upload = multer({ dest: "uploads/linked_accounts/" });
 const service = new LinkedAccountService();
 
 export const insertLinkedAccount = async (req: Request, res: Response) => {
@@ -44,6 +47,37 @@ export const insertLinkedAccount = async (req: Request, res: Response) => {
 };
 
 
+export const insertLinkedAccountBulk = [
+  upload.array("files"), // field name must match the uploaded files
+  async (req: Request, res: Response) => {
+    try {
+      const files = req.files as Express.Multer.File[];
+      if (!files || files.length === 0) {
+        return res.status(400).json({ message: "No files uploaded" });
+      }
+
+      const insertedIds = await service.insertLinkedAccountFromFiles(files);
+
+      // DELETE uploaded files after insertion
+      for (const file of files) {
+        try {
+          fs.unlinkSync(file.path);
+        } catch (err) {
+          console.warn(`Failed to delete file ${file.path}: ${err}`);
+        }
+      }
+
+
+      res.json({
+        message: `Inserted ${insertedIds.length} linked accounts in bulk successfully`,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  },
+];
+
+
 export const deleteTestData = async (req: Request, res: Response) => {
   try {
     const result = await service.deleteTestData();
@@ -55,3 +89,35 @@ export const deleteTestData = async (req: Request, res: Response) => {
     res.status(500).json({ error: err });
   }
 };
+
+export const searchLinkedAccountDelete = async (req: Request, res: Response) => {
+  try{
+  const { account_number } = req.params;
+
+  if (!account_number) {
+      return res.status(400).json({
+        message: "account_number parameter is required",
+      });
+    }
+// 1. Search → return _id
+    const id = await service.searchLinkedAccount(account_number);
+
+    if (!id) {
+      return res.status(404).json({
+        message: "Linked account not found",
+      });
+    }
+       // 2. Delete using _id
+    const deleteResult = await service.deleteLinkedAccountById(id);
+
+    return res.json({
+      message: "Linked account deleted successfully",
+      _id: id,
+      deleteResult,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err instanceof Error ? err.message : err });
+  }
+
+  };
