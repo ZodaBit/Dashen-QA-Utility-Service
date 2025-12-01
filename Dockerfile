@@ -7,7 +7,7 @@ COPY . .
 
 RUN mkdir -p /app/uploads
 
-RUN chmod -R 777 /appuploads
+RUN chmod -R 777 /app/uploads
 
 RUN npx tsc
 
