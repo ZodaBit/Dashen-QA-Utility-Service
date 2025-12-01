@@ -5,9 +5,9 @@ COPY package.json package-lock.json* ./
 RUN npm install
 COPY . .
 
-RUN mkdir -p uploads
+RUN mkdir -p /app/uploads
 
-RUN chmod -R 766 uploads
+RUN chmod -R 777 /appuploads
 
 RUN npx tsc
 
