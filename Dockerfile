@@ -5,6 +5,10 @@ COPY package.json package-lock.json* ./
 RUN npm install
 COPY . .
 
+RUN mkdir -p /app/uploads
+
+RUN chmod -R 777 /app/uploads
+
 RUN npx tsc
 
 EXPOSE 8080
