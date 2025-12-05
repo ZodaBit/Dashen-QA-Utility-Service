@@ -1,11 +1,9 @@
 import mongoose from "mongoose";
-import { ArchivedUserModel } from "../model/archived_users.model.js";
+import { ArchivedLinkedAccountModel } from "../model/archived_linked_account.model.js";
 import fs from "fs";
 import multer from "multer";
-import { arch } from "os";
 
 const test_data = process.env.BATCH_TAG || "test_data";
-
 
 function convertExtendedJSON(obj: any): any {
   if (Array.isArray(obj)) {
@@ -33,7 +31,6 @@ function convertExtendedJSON(obj: any): any {
   return obj;
 }
 
-
 function cleanEnumFields(obj: any): any {
   if (Array.isArray(obj)) {
     return obj.map(cleanEnumFields);
@@ -56,7 +53,7 @@ function cleanEnumFields(obj: any): any {
   return obj;
 }
 
-export class ArchivedUserService {
+export class ArchivedLinkedAccountService {
  
     private convertOid(doc: any): any {
     if (Array.isArray(doc)) return doc.map((d) => this.convertOid(d));
@@ -76,15 +73,16 @@ export class ArchivedUserService {
     return doc;
   }
 
-  public async insertArchivedUsersAccount(buffer: Buffer): Promise<string> {
+  public async insert(buffer: Buffer): Promise<string> {
     try {
-
       const bufferStr = buffer.toString("utf-8");
-      let archived_users = JSON.parse(bufferStr);
-      archived_users = convertExtendedJSON(archived_users);
-      archived_users = cleanEnumFields(archived_users);
-      archived_users.batch_tag = test_data;
-      const insertedDoc = (await ArchivedUserModel.insertOne( archived_users )) as any;
+      let archived_linked_account = JSON.parse(bufferStr);
+      archived_linked_account = convertExtendedJSON(archived_linked_account);
+      archived_linked_account = cleanEnumFields(archived_linked_account);
+      archived_linked_account.batch_tag = test_data;
+      const insertedDoc = (await ArchivedLinkedAccountModel.insertOne(
+        archived_linked_account
+      )) as any;
 
       // convert objectId to string
       const id = insertedDoc._id.toString();
@@ -94,23 +92,23 @@ export class ArchivedUserService {
     }
   }
 
-   public async bulkInsertArchivedUsers(files: Express.Multer.File[]): Promise<string[]> {
+   public async bulkInsert(files: Express.Multer.File[]): Promise<string[]> {
       try {
-        const archivedUsersDocs: any[] = [];
+        const ArchivedLinkedAccountDocs: any[] = [];
   
         for (const file of files) {
           const buffer = fs.readFileSync(file.path);
           const bufferStr = buffer.toString("utf-8");
-          let archived_users = JSON.parse(bufferStr);
+          let archived_linked_account_data = JSON.parse(bufferStr);
   
-          archived_users = convertExtendedJSON(archived_users);
-          archived_users = cleanEnumFields(archived_users);
-          archived_users.batch_tag = test_data;
-          archivedUsersDocs.push(archived_users);
+          archived_linked_account_data = convertExtendedJSON(archived_linked_account_data);
+          archived_linked_account_data = cleanEnumFields(archived_linked_account_data);
+          archived_linked_account_data.batch_tag = test_data;
+          ArchivedLinkedAccountDocs.push(archived_linked_account_data);
         }
   
         // Bulk insert
-        const insertedDocs = await ArchivedUserModel.insertMany(archivedUsersDocs);
+        const insertedDocs = await ArchivedLinkedAccountModel.insertMany(ArchivedLinkedAccountDocs);
   
         // Return all inserted _id as string
         return insertedDocs.map((doc) => doc._id.toString());
@@ -119,24 +117,24 @@ export class ArchivedUserService {
       }
     }
 
-          public async searcheArchivedUser(account_number: string): Promise<any> {
-            try {
-              const doc = await ArchivedUserModel.findOne({account_number}, { _id: 1 });
-              return doc?._id?.toString() || null;
-            } catch (err) {
-              throw err;
-            }
-          }
-          
-           deleteArchivedUserById(id: string): Promise<any> {
-            try{
-              return ArchivedUserModel.deleteOne({ _id: new mongoose.Types.ObjectId(id) });
-            }catch(err){
-              throw err;
-            }
-            }
-  deleteTestData(): Promise<any> {
-    return ArchivedUserModel.deleteMany({ batch_tag: test_data });
-  }
+      public async searchArchivedAccount(account_number: string): Promise<any> {
+        try {
+          const doc = await ArchivedLinkedAccountModel.findOne({account_number}, { _id: 1 });
+          return doc?._id?.toString() || null;
+        } catch (err) {
+          throw err;
+        }
+      }
+      
+       deleteArchivedAccountById(id: string): Promise<any> {
+        try{
+          return ArchivedLinkedAccountModel.deleteOne({ _id: new mongoose.Types.ObjectId(id) });
+        }catch(err){
+          throw err;
+        }
+        }
 
+  delete(): Promise<any> {
+    return ArchivedLinkedAccountModel.deleteMany({ batch_tag: test_data });
+  }
 }

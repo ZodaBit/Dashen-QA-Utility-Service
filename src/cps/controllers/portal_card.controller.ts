@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
-import { ArchivedUserService } from "../ services/services/archived_users.services.js"; // FIXED PATH
+import { PortalCardService } from "../ services/services/portal_card.services.js";
 import multer from "multer";
 import fs from "fs";
 
 // Multer: Only accept .json files, store in uploads folder
 const upload = multer({
-  dest: "uploads/archived_users/",
+  dest: "uploads/portal_card/",
   fileFilter: (req, file, cb) => {
     if (!file.originalname.endsWith(".json")) {
       return cb(new Error("Only .json files are allowed"));
@@ -14,15 +14,16 @@ const upload = multer({
   },
 });
 
-const service = new ArchivedUserService();
+const service = new PortalCardService();
 
 /**
  * ----------------------------------------------
  * INSERT SINGLE ARCHIVED USER (file: .json)
  * ----------------------------------------------
  */
-export const insertArchivedUsers = [
-  upload.single("file"), // Field name MUST be `file`
+export const insert = [
+ 
+    upload.single("file"), // Field name MUST be `file`
   async (req: Request, res: Response) => {
     try {
       if (!req.file) {
@@ -32,13 +33,13 @@ export const insertArchivedUsers = [
       const fileBuffer = fs.readFileSync(req.file.path);
 
       // Service call
-      const ids = await service.insertArchivedUsersAccount(fileBuffer);
+      const ids = await service.insert(fileBuffer);
 
       // Cleanup uploaded file
       fs.unlinkSync(req.file.path);
 
       return res.json({
-        message: "Inserted archived user successfully.",
+        message: "Inserted portal successfully.",
         insertedIds: ids,
       });
     } catch (err: any) {
@@ -53,7 +54,7 @@ export const insertArchivedUsers = [
  * INSERT BULK ARCHIVED USERS (multiple .json files)
  * ----------------------------------------------
  */
-export const insertArchivedUsersBulk = [
+export const bulkInsert = [
   upload.array("files"), // Field name MUST be `files`
   async (req: Request, res: Response) => {
     try {
@@ -63,7 +64,7 @@ export const insertArchivedUsersBulk = [
         return res.status(400).json({ message: "No files uploaded" });
       }
 
-      const insertedIds = await service.bulkInsertArchivedUsers(files);
+      const insertedIds = await service.bulkInsert(files);
 
       // Delete uploaded files
       for (const file of files) {
@@ -75,7 +76,7 @@ export const insertArchivedUsersBulk = [
       }
 
       return res.json({
-        message: `Inserted ${insertedIds.length} archived users in bulk successfully`,
+        message: `Inserted ${insertedIds.length} portal card in bulk successfully`,
         insertedIds,
       });
     } catch (err: any) {
@@ -92,7 +93,7 @@ export const insertArchivedUsersBulk = [
  */
 export const deleteTestData = async (req: Request, res: Response) => {
   try {
-    const result = await service.deleteTestData();
+    const result = await service.delete();
     return res.json({
       message: "Deleted test data",
       deleted: result.deletedCount,
@@ -101,35 +102,3 @@ export const deleteTestData = async (req: Request, res: Response) => {
     return res.status(500).json({ error: err });
   }
 };
-
-export const searchArchivedUserAndDelete = async (req: Request, res: Response) => {
-  try{
-  const { account_number } = req.params;
-
-  if (!account_number) {
-      return res.status(400).json({
-        message: "account_number parameter is required",
-      });
-    }
-// 1. Search → return _id
-    const id = await service.searcheArchivedUser(account_number);
-
-    if (!id) {
-      return res.status(404).json({
-        message: "Linked account not found",
-      });
-    }
-       // 2. Delete using _id
-    const deleteResult = await service.deleteArchivedUserById(id);
-
-    return res.json({
-      message: "Linked account deleted successfully",
-      _id: id,
-      deleteResult,
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: err instanceof Error ? err.message : err });
-  }
-
-  };
