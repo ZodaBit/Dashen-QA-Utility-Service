@@ -12,7 +12,8 @@ import archivedLinkedAccountRoutes from "./cps/routes/archived_linked_account.ro
 import AvatarRoutes from "./cps/routes/avatar.routes.js";
 import PortalCardRoutes from "./cps/routes/portal_card.routes.js";
 import BudgetCategoryRoutes from "./cps/routes/budget_category.routes.js";
-
+import AdvertRoutes from "./cps/routes/advert.routes.js";
+import NotificationsRoutes from "./cps/routes/notifications.routes.js";
 dotenv.config();
 
 const app = express();
@@ -31,6 +32,8 @@ app.use("/api/v1/cbesuperapp/qaservice/archived_linked_account",archivedLinkedAc
 app.use("/api/v1/cbesuperapp/qaservice/avatar",AvatarRoutes);
 app.use("/api/v1/cbesuperapp/qaservice/portal_card",PortalCardRoutes);
 app.use("/api/v1/cbesuperapp/qaservice/budget_category",BudgetCategoryRoutes);
+app.use("/api/v1/cbesuperapp/qaservice/advert",AdvertRoutes);
+app.use("/api/v1/cbesuperapp/qaservice/notifications",NotificationsRoutes);
 
 app.get("/api/v1/cbesuperapp/qaservice/health", (req, res) => res.json({ status: "ok" }));
 
