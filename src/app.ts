@@ -14,6 +14,12 @@ import PortalCardRoutes from "./cps/routes/portal_card.routes.js";
 import BudgetCategoryRoutes from "./cps/routes/budget_category.routes.js";
 import AdvertRoutes from "./cps/routes/advert.routes.js";
 import NotificationsRoutes from "./cps/routes/notifications.routes.js";
+import MiniAppRoutes from "./cps/routes/mini_app.routes.js";
+import MiniAppCategoryRoutes from "./cps/routes/mini_app_category.routes.js";
+import MiniAppMerchantRoutes from "./cps/routes/mini_app_merchant.routes.js";
+import DonationCategoryRoutes from "./cps/routes/donation_Category.routes.js";
+import DonationCompanyRoutes from "./cps/routes/donation_compnay.routes.js";
+import DonationRoutes from "./cps/routes/donation.routes.js";
 dotenv.config();
 
 const app = express();
@@ -34,6 +40,13 @@ app.use("/api/v1/cbesuperapp/qaservice/portal_card",PortalCardRoutes);
 app.use("/api/v1/cbesuperapp/qaservice/budget_category",BudgetCategoryRoutes);
 app.use("/api/v1/cbesuperapp/qaservice/advert",AdvertRoutes);
 app.use("/api/v1/cbesuperapp/qaservice/notifications",NotificationsRoutes);
+app.use("/api/v1/cbesuperapp/qaservice/mini_app",MiniAppRoutes);
+app.use("/api/v1/cbesuperapp/qaservice/mini_app_category",MiniAppCategoryRoutes);
+app.use("/api/v1/cbesuperapp/qaservice/mini_app_merchant",MiniAppMerchantRoutes);
+app.use("/api/v1/cbesuperapp/qaservice/donation_category",DonationCategoryRoutes);
+app.use("/api/v1/cbesuperapp/qaservice/donation_company",DonationCompanyRoutes);
+app.use("/api/v1/cbesuperapp/qaservice/donation",DonationRoutes);
+
 
 app.get("/api/v1/cbesuperapp/qaservice/health", (req, res) => res.json({ status: "ok" }));
 
