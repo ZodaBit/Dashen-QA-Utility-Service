@@ -20,18 +20,18 @@ const DonationCompanySchema: Schema = new Schema(
   {
     _id: { type: mongoose.Types.ObjectId },
 
-    company_name: { type: String, required: true },
-    company_logo: { type: String, required: true },
+    company_name: { type: String },
+    company_logo: { type: String },
 
-    account_number: { type: String, required: true },
-    account_holder_name: { type: String, required: true },
+    account_number: { type: String },
+    account_holder_name: { type: String },
 
-    address: { type: String, required: true },
-    phone_number: { type: String, required: true },
-    email: { type: String, required: true },
+    address: { type: String },
+    phone_number: { type: String },
+    email: { type: String },
 
-    enabled: { type: Boolean, default: true },
-    is_deleted: { type: Boolean, default: false },
+    enabled: { type: Boolean },
+    is_deleted: { type: Boolean },
 
     created_at: { type: Date, default: Date.now },
     last_modified_at: { type: Date, default: Date.now },

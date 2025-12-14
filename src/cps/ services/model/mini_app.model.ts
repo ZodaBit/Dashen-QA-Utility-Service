@@ -6,11 +6,9 @@ export interface IMiniApp extends Document {
 
   app_name: string;
   app_icon: string;
-  app_code: string;
   banner_image: string;
-  commison_gl_account: string;
   app_type: string;
-  merchant_id: string;
+  merchant_id: mongoose.Types.ObjectId;
 
   product_code: {
     _id: string;
@@ -21,7 +19,6 @@ export interface IMiniApp extends Document {
   }[];
 
   credential: {
-    _id: mongoose.Types.ObjectId;
     environment: string;
     merchant_app_id: string;
     fabric_app_id: string;
@@ -38,8 +35,7 @@ export interface IMiniApp extends Document {
   app_view_type: string;
   stage: string;
 
-  is_event_mini_app: boolean;
-  is_three_click: boolean;
+  app_mode:string;
 
   enabled: boolean;
   is_deleted: boolean;
@@ -57,12 +53,10 @@ const MiniAppSchema: Schema = new Schema(
 
     app_name: { type: String, required: true },
     app_icon: { type: String, required: true },
-    app_code: { type: String, required: true },
     banner_image: { type: String, default: "" },
-    commison_gl_account: { type: String, default: "" },
 
     app_type: { type: String, required: true },
-    merchant_id: { type: String, required: true },
+    merchant_id: { type: mongoose.Types.ObjectId, required: true },
 
     product_code: [
       {
@@ -75,7 +69,6 @@ const MiniAppSchema: Schema = new Schema(
     ],
 
     credential: {
-      _id: { type: mongoose.Types.ObjectId },
       environment: { type: String },
       merchant_app_id: { type: String },
       fabric_app_id: { type: String },
@@ -92,8 +85,7 @@ const MiniAppSchema: Schema = new Schema(
     app_view_type: { type: String },
     stage: { type: String },
 
-    is_event_mini_app: { type: Boolean, default: false },
-    is_three_click: { type: Boolean, default: false },
+   app_mode:{type:String},
 
     enabled: { type: Boolean, default: true },
     is_deleted: { type: Boolean, default: false },
