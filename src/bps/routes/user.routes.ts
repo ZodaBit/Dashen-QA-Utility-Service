@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { LinkedAccountController } from "../controllers/linked_account.controller.js";
+import { UserController} from "../controllers/user.controller.js";
 
 
 const router = Router();
-const controller = LinkedAccountController;
+const controller = UserController;
 
-router.post("/insert_member", controller.insert);
+router.post("/insert", controller.insert);
 router.delete("/delete", controller.delete);
 router.post("/bulk_insert",controller.bulkInsert) 
 

@@ -1,12 +1,11 @@
 import { Router } from "express";
-import {
-  insertAccessList,
-  deleteAccessLists,
-} from "../controllers/accessList.controller.js";
+import { AccessListController} from "../controllers/accessList.controller.js";
 
 const router = Router();
+const controller = AccessListController;
 
-router.post("/insert_access_list", insertAccessList);
-router.delete("/delete_test_data", deleteAccessLists);
+router.post("/insert", controller.insert);
+router.delete("/delete", controller.delete);
+router.post("/bulk_insert",controller.bulkInsert)
 
 export default router;
