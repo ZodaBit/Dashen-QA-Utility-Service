@@ -1,46 +1,57 @@
-import mongoose, { Schema, Document } from "mongoose";
+import modules from "./imports/index.js";
+import { Document } from "mongoose";
 
-export interface IAdvert extends Document {
-  _id: mongoose.Types.ObjectId;
-  title: string;
-  description: string;
-  banner_image: string;
-  advert_for: string;
-  advert_date: {
-    started_at: Date;
-    expired_at: Date;
-  };
-  enabled: boolean;
-  is_deleted: boolean;
-  deleted_at: Date | null;
-  created_at: Date;
-  last_updated_at: Date;
-   batch_tag: string;
+interface Advert extends Document {
+  title?: string;
+  description?: string;
+  bannerImage?: string;
+  createdBy?: any;
+  startDate?: Date;
+  for?: "IFB" | "CB" | "ALL";
+  endDate?: Date;
+  enabled?: boolean;
+  isDeleted?: boolean;
+  createdAt?: Date;
+  lastModified?: Date;
 }
 
-const AdvertSchema: Schema = new Schema(
-  {
-    _id: { type: mongoose.Types.ObjectId },
+const Schema = modules.mongoose.Schema;
 
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    banner_image: { type: String, required: true },
-    advert_for: { type: String, required: true },
+const AdvertSchema = new Schema<Advert>({
+  title: { type: String },
+  description: { type: String },
+  bannerImage: { type: String },
+  createdBy: { type: Schema.Types.ObjectId, ref: "User" },
+  startDate: { type: Date },
+  for: { type: String, enum: ["IFB", "CB", "ALL"] },
+  endDate: { type: Date },
+  enabled: { type: Boolean, default: true },
+  isDeleted: { type: Boolean, default: false },
+  createdAt: { type: Date },
+  lastModified: { type: Date },
+});
 
-    advert_date: {
-      started_at: { type: Date, required: true },
-      expired_at: { type: Date, required: true },
-    },
+// add mongoose-troop middleware to support pagination
+AdvertSchema.plugin(modules.paginator);
 
-    enabled: { type: Boolean, default: true },
-    is_deleted: { type: Boolean, default: false },
-    deleted_at: { type: Date, default: null },
+/**
+ * Pre save middleware.
+ *
+ * Sets the date_created and last_modified attributes prior to save
+ */
 
-    created_at: { type: Date, default: Date.now },
-    last_updated_at: { type: Date, default: Date.now },
-    batch_tag: { type: String },
-  },
-  { collection: "adverts", versionKey: false }
+AdvertSchema.pre<Advert>("save", function preSave(next) {
+  const now = modules.moment().toDate();
+
+  this.createdAt = now;
+  this.lastModified = now;
+
+  next();
+});
+
+const AdvertModel = modules.mongoose.model<Advert>(
+  "Advert",
+  AdvertSchema
 );
 
-export const AdvertModel = mongoose.model<IAdvert>("Advert", AdvertSchema);
+export default AdvertModel;
