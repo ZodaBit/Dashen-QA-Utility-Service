@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { insert,deleteTestData,bulkInsert } from "../controllers/avatar.controller.js";
+import { AvatarController } from "../controllers/avatar.controller.js";
 
 const router = Router();
+const controller = AvatarController;
 
-router.post("/insert", insert);
-router.delete("/delete_test_data", deleteTestData);
-router.post("/bulk_insert",bulkInsert)
+router.post("/insert", controller.insert);
+router.delete("/delete", controller.delete);
+router.post("/bulk_insert", controller.bulkInsert);
 
 export default router;
