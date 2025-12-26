@@ -4,6 +4,7 @@ import { connectToDatabase } from "./bps/utils/mongo.js";
 import accessListRoutes from "./bps/routes/accessList.routes.js";
 import UserRoutes from "./bps/routes/user.routes.js";
 import linkedAccountRoutes from "./bps/routes/linked_account.routes.js";
+import TransactionLimitRoutes from "./bps/routes/transaction_limit.routes.js";
 
 import archivedUserRoutes from "./cps/routes/archived_users.routes.js";
 import archivedLinkedAccountRoutes from "./cps/routes/archived_linked_account.routes.js";
@@ -25,25 +26,31 @@ const app = express();
 const PORT = process.env.PORT || 4500;
 
 app.use(express.json());
-app.use("/api/v1/cbesuperapp/qaservice/access_list", accessListRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/user",UserRoutes );
-app.use("/api/v1/cbesuperapp/qaservice/account",linkedAccountRoutes );
-app.use("/api/v1/cbesuperapp/qaservice/archived_user",archivedUserRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/archived_linked_account",archivedLinkedAccountRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/avatar",AvatarRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/portal_card",PortalCardRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/budget_category",BudgetCategoryRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/advert",AdvertRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/notifications",NotificationsRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/mini_app",MiniAppRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/mini_app_category",MiniAppCategoryRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/mini_app_merchant",MiniAppMerchantRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/donation_category",DonationCategoryRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/donation_company",DonationCompanyRoutes);
-app.use("/api/v1/cbesuperapp/qaservice/donation",DonationRoutes);
+
+const qaServiceRouter = express.Router();
+
+qaServiceRouter.use("/access_list", accessListRoutes);
+qaServiceRouter.use("/user", UserRoutes);
+qaServiceRouter.use("/account", linkedAccountRoutes);
+qaServiceRouter.use("/transaction_limit", TransactionLimitRoutes);
+
+qaServiceRouter.use("/archived_user", archivedUserRoutes);
+qaServiceRouter.use("/archived_linked_account", archivedLinkedAccountRoutes);
+qaServiceRouter.use("/avatar", AvatarRoutes);
+qaServiceRouter.use("/portal_card", PortalCardRoutes);
+qaServiceRouter.use("/budget_category", BudgetCategoryRoutes);
+qaServiceRouter.use("/advert", AdvertRoutes);
+qaServiceRouter.use("/notifications", NotificationsRoutes);
+qaServiceRouter.use("/mini_app", MiniAppRoutes);
+qaServiceRouter.use("/mini_app_category", MiniAppCategoryRoutes);
+qaServiceRouter.use("/mini_app_merchant", MiniAppMerchantRoutes);
+qaServiceRouter.use("/donation_category", DonationCategoryRoutes);
+qaServiceRouter.use("/donation_company", DonationCompanyRoutes);
+qaServiceRouter.use("/donation", DonationRoutes);
+qaServiceRouter.get("/health", (req, res) => res.json({ status: "ok" }));
 
 
-app.get("/api/v1/cbesuperapp/qaservice/health", (req, res) => res.json({ status: "ok" }));
+app.use("/api/v1/dashen/qaservice", qaServiceRouter);
 
 async function startServer() {
   try {
