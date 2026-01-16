@@ -5,7 +5,7 @@ import { LinkedAccountController } from "../controllers/linked_account.controlle
 const router = Router();
 const controller = LinkedAccountController;
 
-router.post("/insert_member", controller.insert);
+router.post("/insert", controller.insert);
 router.delete("/delete", controller.delete);
 router.post("/bulk_insert",controller.bulkInsert) 
 

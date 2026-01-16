@@ -17,6 +17,8 @@ export interface ITransactionLimit extends Document {
   customDailyTransactionLimit: ServiceLimits;
   customSingleTransactionLimit: ServiceLimits;
 
+  batch_tag: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -63,6 +65,7 @@ const TransactionLimitSchema: Schema = new Schema<ITransactionLimit>(
       type: Schema.Types.Mixed,
       default: {},
     },
+    batch_tag: { type: String },
   },
   {
     collection: "transactionlimits", // adjust if your actual collection name differs

@@ -1,6 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-export interface IAccessListEntry {
+/* ===== Interface ===== */
+export interface IAccessList {
   transfertodashen: boolean;
   transfertootherbank: boolean;
   ips: boolean;
@@ -41,63 +42,62 @@ export interface IAccessListEntry {
   budget: boolean;
 }
 
-export interface IUserAccess extends Document {
-  user: mongoose.Types.ObjectId;
-  accessList: IAccessListEntry;
-  lastModified: Date;
-}
-
-const AccessListEntrySchema: Schema = new Schema({
-  transfertodashen: { type: Boolean, default: false },
-  transfertootherbank: { type: Boolean, default: false },
-  ips: { type: Boolean, default: false },
-  ipsoutgoing: { type: Boolean, default: false },
-  ipsincoming: { type: Boolean, default: false },
-  wallet: { type: Boolean, default: false },
-  wallettelebirr: { type: Boolean, default: false },
-  walletmpesa: { type: Boolean, default: false },
-  topup: { type: Boolean, default: false },
-  ethiotelecomtopup: { type: Boolean, default: false },
-  safaricomtopup: { type: Boolean, default: false },
-  utility: { type: Boolean, default: false },
-  schoolfeepay: { type: Boolean, default: false },
-  dstv: { type: Boolean, default: false },
-  ethiopianairlines: { type: Boolean, default: false },
-  trafficpayparking: { type: Boolean, default: false },
-  trafficpaypenalty: { type: Boolean, default: false },
-  merchantpay: { type: Boolean, default: false },
-  microfinance: { type: Boolean, default: false },
-  awach: { type: Boolean, default: false },
-  sahay: { type: Boolean, default: false },
-  requestmoney: { type: Boolean, default: false },
-  chat: { type: Boolean, default: false },
-  chatsendmoney: { type: Boolean, default: false },
-  chatrequestmoney: { type: Boolean, default: false },
-  kazna: { type: Boolean, default: false },
-  qrpay: { type: Boolean, default: false },
-  dashenqrpay: { type: Boolean, default: false },
-  ipsqrpay: { type: Boolean, default: false },
-  profilebankingsettings: { type: Boolean, default: false },
-  profileaccountsettings: { type: Boolean, default: false },
-  addnewaccount: { type: Boolean, default: false },
-  linkexistingaccount: { type: Boolean, default: false },
-  ministatement: { type: Boolean, default: false },
-  miniapps: { type: Boolean, default: false },
-  transactionslist: { type: Boolean, default: false },
-  balanceview: { type: Boolean, default: false },
-  budget: { type: Boolean, default: false },
+/* ===== AccessList Schema ===== */
+const AccessListSchema = new mongoose.Schema<IAccessList>({
+  transfertodashen: Boolean,
+  transfertootherbank: Boolean,
+  ips: Boolean,
+  ipsoutgoing: Boolean,
+  ipsincoming: Boolean,
+  wallet: Boolean,
+  wallettelebirr: Boolean,
+  walletmpesa: Boolean,
+  topup: Boolean,
+  ethiotelecomtopup: Boolean,
+  safaricomtopup: Boolean,
+  utility: Boolean,
+  schoolfeepay: Boolean,
+  dstv: Boolean,
+  ethiopianairlines: Boolean,
+  trafficpayparking: Boolean,
+  trafficpaypenalty: Boolean,
+  merchantpay: Boolean,
+  microfinance: Boolean,
+  awach: Boolean,
+  sahay: Boolean,
+  requestmoney: Boolean,
+  chat: Boolean,
+  chatsendmoney: Boolean,
+  chatrequestmoney: Boolean,
+  kazna: Boolean,
+  qrpay: Boolean,
+  dashenqrpay: Boolean,
+  ipsqrpay: Boolean,
+  profilebankingsettings: Boolean,
+  profileaccountsettings: Boolean,
+  addnewaccount: Boolean,
+  linkexistingaccount: Boolean,
+  ministatement: Boolean,
+  miniapps: Boolean,
+  transactionslist: Boolean,
+  balanceview: Boolean,
+  budget: Boolean,
 });
 
-const UserAccessSchema: Schema = new Schema(
+/* ===== Main Schema ===== */
+const UserAccessSchema = new mongoose.Schema(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    accessList: { type: AccessListEntrySchema, required: true },
-    lastModified: { type: Date, default: Date.now },
+    _id: { type: mongoose.Schema.Types.ObjectId, required: true },
+    user: { type: mongoose.Schema.Types.ObjectId },
+    accessList: AccessListSchema,
+    lastModified: Date,
+    batch_tag: String,
   },
-  { collection: "accesslists", versionKey: false }
+  {
+    collection: "accesslists",
+    versionKey: false,
+  }
 );
 
-export const AccessListModel = mongoose.model<IUserAccess>(
-  "UserAccess",
-  UserAccessSchema
-);
+/* ===== Model ===== */
+export const AccessListModel = mongoose.model("UserAccess", UserAccessSchema);

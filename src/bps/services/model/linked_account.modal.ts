@@ -1,50 +1,70 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+/**
+ * Linked Account interface
+ */
 export interface ILinkedAccount extends Document {
   _id: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId; // was user_id
+  user: mongoose.Types.ObjectId;
   accountNumber: string;
-  accountHolderName: string;
-  AccountBranchCode: string; // branch code
   linkedStatus: boolean;
-  ussdLinkedStatus: boolean;
+  accountHolderName: string;
   linkedDate: Date;
   accountType: string;
-  isAccountActive: boolean;
+  AccountBranchCode: string;
+  ussdLinkedStatus: boolean;
   linkedBranch: string;
-  makerAndChecker: {
-    Linkers: {
-      maker: string;
-      checker: string;
-    };
-  };
-  batch_tag: string;
+  linkerMaker: string;
+  linkerChecker: string;
+  lastLinkedStatus: boolean;
+  unlinkerChecker: string;
+  unlinkerMaker: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+/**
+ * Linked Account schema
+ */
 const LinkedAccountSchema: Schema = new Schema(
   {
     _id: { type: mongoose.Types.ObjectId },
-    user: { type: mongoose.Types.ObjectId, required: true },
-    accountNumber: { type: String, required: true },
-    accountHolderName: { type: String, required: true },
-    AccountBranchCode: { type: String },
-    linkedStatus: { type: Boolean, default: false },
-    ussdLinkedStatus: { type: Boolean, default: false },
-    linkedDate: { type: Date },
-    accountType: { type: String },
-    isAccountActive: { type: Boolean, default: true },
-    linkedBranch: { type: String },
-    makerAndChecker: {
-      Linkers: {
-        maker: { type: String },
-        checker: { type: String },
-      },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    batch_tag: { type: String },
+
+    accountNumber: { type: String, required: true },
+    linkedStatus: { type: Boolean, default: false },
+    accountHolderName: { type: String },
+
+    linkedDate: { type: Date },
+
+    accountType: { type: String },
+    AccountBranchCode: { type: String },
+
+    ussdLinkedStatus: { type: Boolean, default: false },
+    linkedBranch: { type: String },
+
+    linkerMaker: { type: String },
+    linkerChecker: { type: String },
+
+    lastLinkedStatus: { type: Boolean, default: false },
+
+    unlinkerChecker: { type: String },
+    unlinkerMaker: { type: String },
   },
-  { collection: "LinkedAccounts", versionKey: false }
+  {
+    collection: "linkedaccounts",
+    timestamps: true, // maps createdAt & updatedAt
+    versionKey: false,
+  }
 );
 
+/**
+ * Linked Account model
+ */
 export const LinkedAccountModel = mongoose.model<ILinkedAccount>(
   "LinkedAccount",
   LinkedAccountSchema
